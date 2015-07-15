@@ -13,6 +13,10 @@ p.date {
 	color:#999999;	
 }
 
+.label {
+	margin: 0px 2px;	
+}
+
 @media(max-width:767px)
 {
 	input[type=submit] {

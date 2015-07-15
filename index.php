@@ -117,9 +117,25 @@ echo'
 					<a href="#"><h3>'.$row['title'].'</h3></a>
 				</div>
 				<div class="panel-body">
-					<p class="date">'.$row['date'].'</p>
-					<p>'.$row['content'].'</p>
-					<a class="label label-info">Tag</a>
+					<p class="date">'.date('jS M Y',strtotime($row['date'])).'</p>
+					<p>'.substr($row['content'],0,600).'...... <a href="#">Read More</a></p>
+					';
+						//pivot table
+						$sql2 = "select * from $pivot_table WHERE news_item_id LIKE '$row[ID]' ORDER BY category_id ASC";
+						$result2 = mysqli_query($conn, $sql2) or die (mysqli_error($conn));
+							
+						while ($row2 = mysqli_fetch_array($result2)) {
+							echo '<a class="label label-info">';
+							//tag table
+							$sql3 = "select * from $cat_table WHERE ID LIKE '$row2[category_id]' ORDER BY ID ASC";
+							$result3 = mysqli_query($conn, $sql3) or die (mysqli_error($conn));
+								while ($row3 = mysqli_fetch_array($result3)) {
+									echo $row3['title'];
+								}
+							echo'</a>';	
+						}
+					
+					echo'
 				</div>
 			</div>
 			';
