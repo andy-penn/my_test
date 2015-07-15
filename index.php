@@ -20,12 +20,8 @@ $news_table = "news_item";
 $cat_table = "category";
 $pivot_table = "category_news_item";
 
-//test database pull
-$sql = "select * from $news_table ORDER BY date ASC";
-$result = mysqli_query($conn, $sql) or die (mysqli_error($conn));
-
 if( isset($_SESSION['myCat']) && isset($_SESSION['myMonth'])){
-	$sql = "SELECT $news_table.title, $news_table.content, $news_table.date
+	$sql = "SELECT $news_table.ID, $news_table.title, $news_table.content, $news_table.date
 	FROM $news_table 
 	INNER JOIN $pivot_table 
 	INNER JOIN $cat_table
@@ -33,9 +29,8 @@ if( isset($_SESSION['myCat']) && isset($_SESSION['myMonth'])){
 	AND $pivot_table.news_item_id = $news_table.ID
 	AND $cat_table.title = '$_SESSION[myCat]'
 	ORDER BY date ASC";
-	$result = mysqli_query($conn, $sql) or die (mysqli_error($conn));	
+	$result = mysqli_query($conn, $sql) or die (mysqli_error($conn));
 }
-
 echo'
 
 <!DOCTYPE html>
@@ -131,7 +126,18 @@ echo'
 				<div class="panel-body">
 					<p class="date">'.date('jS M Y',strtotime($row['date'])).'</p>
 					<p>'.substr($row['content'],0,600).'...... <a href="#">Read More</a></p>
-					<a class="label label-info">tag</a>
+					';
+						$sql2 = "SELECT $cat_table.title
+						FROM $cat_table
+						INNER JOIN $pivot_table
+						ON $pivot_table.news_item_id = '$row[ID]'
+						AND $cat_table.ID = $pivot_table.category_id
+						ORDER BY title ASC";
+						$result2 = mysqli_query($conn, $sql2) or die (mysqli_error($conn));
+					while ($row2 = mysqli_fetch_array($result2)) {
+						echo '<a class="label label-info">'.$row2['title'].'</a>';
+					}
+					echo'
 				</div>
 			</div>
 			';
