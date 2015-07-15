@@ -11,7 +11,8 @@ if(!empty($_POST)){
 	}else{
 		$_SESSION['myCat'] = mysqli_real_escape_string($conn, $_POST['myCat']);
 		$_SESSION['myMonth'] = mysqli_real_escape_string($conn, $_POST['myMonth']);
-		$_SESSION['myNum'] = mysqli_real_escape_string($conn, $_POST['myNum']);
+		//items per page
+		$_SESSION['ipp'] = mysqli_real_escape_string($conn, $_POST['myNum']);	
 	}
 }
 
@@ -19,6 +20,14 @@ if(!empty($_POST)){
 $news_table = "news_item";
 $cat_table = "category";
 $pivot_table = "category_news_item";
+
+//check what page we're on else set to 1
+if (isset($_GET["page"])){ 
+	$page = $_GET["page"]; 
+}else{
+	$page=1; 
+};
+$start_from = ($page-1) * $_SESSION['ipp'];
 
 if( isset($_SESSION['myCat']) && isset($_SESSION['myMonth'])){
 	$sql = "SELECT $news_table.ID, $news_table.title, $news_table.content, $news_table.date
@@ -28,9 +37,31 @@ if( isset($_SESSION['myCat']) && isset($_SESSION['myMonth'])){
 	ON $cat_table.ID = $pivot_table.category_id
 	AND $pivot_table.news_item_id = $news_table.ID
 	AND $cat_table.title = '$_SESSION[myCat]'
-	ORDER BY date ASC";
+	ORDER BY date ASC
+	LIMIT $start_from, ".$_SESSION['ipp']."";
 	$result = mysqli_query($conn, $sql) or die (mysqli_error($conn));
-}
+	
+	//now count results to split into pages
+	$rs_result = mysqli_query($conn,$sql) or die (mysqli_error($conn));
+	$rowC = mysqli_fetch_row($rs_result);
+	$total_records = $rowC[0];
+	$total_pages = ceil($total_records / $_SESSION['ipp'] );
+	
+	/*$sql = "SELECT $news_table.ID, $news_table.title, $news_table.content, $news_table.date
+	FROM $news_table 
+	INNER JOIN $pivot_table 
+	INNER JOIN $cat_table
+	ON $cat_table.ID = $pivot_table.category_id
+	AND $pivot_table.news_item_id = $news_table.ID
+	AND $cat_table.title = '$_SESSION[myCat]'
+	ORDER BY date ASC
+	LIMIT $start_from, ".$_SESSION['ipp']."";
+	$rs_result = mysqli_query($conn,$sqlC) or die (mysqli_error($conn));
+	$rowC = mysqli_fetch_row($rs_result);
+	$total_records = $rowC[0];
+	$total_pages = ceil($total_records / $_SESSION['ipp'] );*/
+}	
+
 echo'
 
 <!DOCTYPE html>
@@ -116,7 +147,9 @@ echo'
 
 <!-- Search Results ==============================================================-->
 ';
-
+	//check if a search string has been sent
+	if(isset($_SESSION['myCat']) && isset($_SESSION['myMonth'])){
+		//if so, show results
 		while ($row = mysqli_fetch_array($result)) {
 			echo'
 			<div class="panel panel-default">
@@ -127,6 +160,7 @@ echo'
 					<p class="date">'.date('jS M Y',strtotime($row['date'])).'</p>
 					<p>'.substr($row['content'],0,600).'...... <a href="#">Read More</a></p>
 					';
+						//get the news tags for each result
 						$sql2 = "SELECT $cat_table.title
 						FROM $cat_table
 						INNER JOIN $pivot_table
@@ -142,15 +176,16 @@ echo'
 			</div>
 			';
 		}
+	}
 echo'
 <!-- Pagination =================================================================-->
-		<ul class="pagination">
-			<li><a href="#" aria-label="Previous">&laquo;</a></li>
-			<li><a href="#">1</a></li>
-			<li><a href="#">2</a></li>
-			<li><a href="#">3</a></li>
-			<li><a href="#">4</a></li>
-			<li><a href="#" aria-label="Previous">&raquo;</a></li>
+		<ul class="pagination">';
+		for ($i=1; $i<=$total_pages; $i++) {
+			echo'<li><a href="';if($total_pages > 1){echo $i-1;}else{echo'"#"';}echo'" aria-label="Previous">&laquo;</a></li>';
+			echo'<li><a href="index.php?page="'.$i.'">'.$i.'</a></li>';
+			echo'<li><a href="';if($total_pages > 1 && $page != $i){echo $i+1;}else{echo'"#"';}echo'" aria-label="Next">&raquo;</a></li>';
+		}
+		echo'
 		</ul>
 		
     </div><!-- /container -->
