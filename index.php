@@ -71,7 +71,7 @@ echo'
 					<option value="25">25</option>
 			</select>
 			
-			<label for="submit">Items Per Page &emsp;</label>
+			<label for="submit" class="sublabel">Items Per Page &emsp;</label>
 			<input type="submit" name="submit" value="Filter" class="btn btn-default">
 		</fieldset>
 		</form>
@@ -87,6 +87,7 @@ echo'
 				<p>
 					Text will go here.............................
 				</p>
+				<a class="label label-info">Tag</a>
 			</div>
 		</div>
 		<div class="panel panel-default">
@@ -98,6 +99,7 @@ echo'
 				<p>
 					Text will go here.............................
 				</p>
+				<a class="label label-info">Tag</a>
 			</div>
 		</div>
 

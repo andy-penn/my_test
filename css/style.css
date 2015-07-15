@@ -12,3 +12,16 @@ form.form-inline {
 p.date {
 	color:#999999;	
 }
+
+@media(max-width:767px)
+{
+	input[type=submit] {
+		margin-top:20px;
+		float:left;
+	}
+		
+	.sublabel {
+		float:left;
+		width:100%;	
+	}
+}
