@@ -1,0 +1,14 @@
+@charset "utf-8";
+/* CSS Document */
+
+h3 {
+	margin-top:5px !important;	
+}
+
+form.form-inline {
+	margin-bottom:40px;	
+}
+
+p.date {
+	color:#999999;	
+}

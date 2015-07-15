@@ -22,6 +22,9 @@ echo'
 
     <!-- Custom styles for this template -->
     <link href="navbar-fixed-top.css" rel="stylesheet">
+	
+	<!-- Custom CSS -->
+    <link href="css/style.css" rel="stylesheet">
 
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -33,9 +36,10 @@ echo'
 
   <body>
     <div class="container">
-		<h1>News</h1>
-<!-- Search Form ================================================-->
-		<form class="form-inline">
+<!-- Search Form ============================================================-->
+		<form action="index.php" method="post" class="form-inline">
+		<fieldset>
+		<legend><h1>News</h1></legend>
 			<label for="myCat">Category: </label>
 			<select name="myCat" class="form-control">
 				<option selected disabled>Please Select</option>
@@ -69,13 +73,48 @@ echo'
 			
 			<label for="submit">Items Per Page &emsp;</label>
 			<input type="submit" name="submit" value="Filter" class="btn btn-default">
+		</fieldset>
 		</form>
 
+<!-- Search Results ==============================================================-->
+	
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3>News Title</h3>
+			</div>
+			<div class="panel-body">
+				<p class="date">13th March 2014</p>
+				<p>
+					Text will go here.............................
+				</p>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3>News Title</h3>
+			</div>
+			<div class="panel-body">
+				<p class="date">13th March 2014</p>
+				<p>
+					Text will go here.............................
+				</p>
+			</div>
+		</div>
+
+<!-- Pagination =================================================================-->
+		<ul class="pagination">
+			<li><a href="#" aria-label="Previous">&laquo;</a></li>
+			<li><a href="#">1</a></li>
+			<li><a href="#">2</a></li>
+			<li><a href="#">3</a></li>
+			<li><a href="#">4</a></li>
+			<li><a href="#" aria-label="Previous">&raquo;</a></li>
+		</ul>
+		
     </div><!-- /container -->
 
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
+<!-- Bootstrap core JavaScript ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
