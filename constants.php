@@ -8,7 +8,7 @@ $username = "andytest_me";
 $password = "Pa$$.999";
 $database = "andytest_news_db";
 
-$conn = mysqli_connect($servername, $username, $password);
+$conn = mysqli_connect($servername, $username, $password, $database);
 
 // Check connection
 if (!$conn) {

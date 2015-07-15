@@ -15,6 +15,14 @@ if(!empty($_POST)){
 	}
 }
 
+//set variables
+$news_table = "news_item";
+$cat_table = "category";
+$pivot_table = "category_news_item";
+
+//test database pull
+$sql = "select * from $news_table ORDER BY date ASC";
+$result = mysqli_query($conn, $sql) or die (mysqli_error($conn));
 
 echo'
 
@@ -100,20 +108,23 @@ echo'
 		</form>
 
 <!-- Search Results ==============================================================-->
-	
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<a href="#"><h3>News Title</h3></a>
-			</div>
-			<div class="panel-body">
-				<p class="date">13th March 2014</p>
-				<p>
-					Text will go here.............................
-				</p>
-				<a class="label label-info">Tag</a>
-			</div>
-		</div>
+';
 
+		while ($row = mysqli_fetch_array($result)) {
+			echo'
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<a href="#"><h3>'.$row['title'].'</h3></a>
+				</div>
+				<div class="panel-body">
+					<p class="date">'.$row['content'].'</p>
+					<p>'.$row['date'].'</p>
+					<a class="label label-info">Tag</a>
+				</div>
+			</div>
+			';
+		}
+echo'
 <!-- Pagination =================================================================-->
 		<ul class="pagination">
 			<li><a href="#" aria-label="Previous">&laquo;</a></li>
