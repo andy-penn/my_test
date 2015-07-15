@@ -117,8 +117,8 @@ echo'
 					<a href="#"><h3>'.$row['title'].'</h3></a>
 				</div>
 				<div class="panel-body">
-					<p class="date">'.$row['content'].'</p>
-					<p>'.$row['date'].'</p>
+					<p class="date">'.$row['date'].'</p>
+					<p>'.$row['content'].'</p>
 					<a class="label label-info">Tag</a>
 				</div>
 			</div>
