@@ -12,7 +12,13 @@ if(!empty($_POST)){
 		$_SESSION['myCat'] = mysqli_real_escape_string($conn, $_POST['myCat']);
 		$_SESSION['myMonth'] = mysqli_real_escape_string($conn, $_POST['myMonth']);
 		//items per page
-		$_SESSION['ipp'] = mysqli_real_escape_string($conn, $_POST['myNum']);	
+		$_SESSION['ipp'] = mysqli_real_escape_string($conn, $_POST['myNum']);
+		//convert the date string into datetime
+		$_SESSION['date'] = strtotime($_SESSION['myMonth']);
+		$_SESSION['date'] = date('Y-m-d H:i:s', $_SESSION['date']);
+		//make an end date to search by month
+		$_SESSION['enddate'] = strtotime('+1 month', strtotime($_SESSION['date']));
+		$_SESSION['enddate'] = date('Y-m-d H:i:s', $_SESSION['enddate']);
 	}
 }
 
@@ -21,13 +27,31 @@ $news_table = "news_item";
 $cat_table = "category";
 $pivot_table = "category_news_item";
 
+
 //check what page we're on else set to 1
-if (isset($_GET["page"])){ 
-	$page = $_GET["page"]; 
+if (isset($_GET["page"])){
+	$myP = $_GET["page"];
+	if($myP == "prev"){
+		if($_SESSION['page'] > 1){
+				$_SESSION['page']--;
+		}
+	}else if($myP == "next"){
+		if($_SESSION['tPages'] > $_SESSION['page']){
+				$_SESSION['page']= $_SESSION['page']+1;
+		}
+	}else{
+		$_SESSION['page'] = $myP;
+	}
 }else{
-	$page=1; 
+	$_SESSION['page']=1; 
 };
-$start_from = ($page-1) * $_SESSION['ipp'];
+
+if(isset($_SESSION['ipp'])){
+	$start_from = ($_SESSION['page']-1) * $_SESSION['ipp'];
+}else{
+	$start_from = 0;
+}
+
 
 if( isset($_SESSION['myCat']) && isset($_SESSION['myMonth'])){
 	$sql = "SELECT $news_table.ID, $news_table.title, $news_table.content, $news_table.date
@@ -42,28 +66,20 @@ if( isset($_SESSION['myCat']) && isset($_SESSION['myMonth'])){
 	$result = mysqli_query($conn, $sql) or die (mysqli_error($conn));
 	
 	//now count results to split into pages
-	$rs_result = mysqli_query($conn,$sql) or die (mysqli_error($conn));
-	$rowC = mysqli_fetch_row($rs_result);
-	$total_records = $rowC[0];
-	$total_pages = ceil($total_records / $_SESSION['ipp'] );
-	
-	/*$sql = "SELECT $news_table.ID, $news_table.title, $news_table.content, $news_table.date
+	$sqlC = "SELECT count($news_table.ID), $news_table.ID, $news_table.title, $news_table.content, $news_table.date
 	FROM $news_table 
 	INNER JOIN $pivot_table 
 	INNER JOIN $cat_table
 	ON $cat_table.ID = $pivot_table.category_id
 	AND $pivot_table.news_item_id = $news_table.ID
-	AND $cat_table.title = '$_SESSION[myCat]'
-	ORDER BY date ASC
-	LIMIT $start_from, ".$_SESSION['ipp']."";
+	AND $cat_table.title = '$_SESSION[myCat]'";
 	$rs_result = mysqli_query($conn,$sqlC) or die (mysqli_error($conn));
 	$rowC = mysqli_fetch_row($rs_result);
 	$total_records = $rowC[0];
-	$total_pages = ceil($total_records / $_SESSION['ipp'] );*/
-}	
-
+	$total_pages = ceil($total_records / $_SESSION['ipp']);
+	$_SESSION['tPages'] = $total_pages;
+}
 echo'
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -117,19 +133,19 @@ echo'
 			<select name="myMonth" class="form-control"><!--PHP TO REMEMBER ORIGINAL SELECTION-->
 				<option selected disabled>Please Select</option>
 				<optgroup Label="2014">
-					<option value="01/11/2014"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="01/11/2014"){echo' selected';}}echo'>November</option>
-					<option value="01/12/2014"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="01/12/2014"){echo' selected';}}echo'>December</option>
+					<option value="November2014"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="November2014"){echo' selected';}}echo'>November</option>
+					<option value="December2014"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="December2014"){echo' selected';}}echo'>December</option>
 				<optgroup Label="2015">
-					<option value="01/01/2015"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="01/01/2015"){echo' selected';}}echo'>January</option>
-					<option value="01/02/2015"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="01/02/2015"){echo' selected';}}echo'>February</option>
-					<option value="01/03/2015"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="01/03/2015"){echo' selected';}}echo'>March</option>
+					<option value="January2015"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="January2015"){echo' selected';}}echo'>January</option>
+					<option value="February2015"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="February2015"){echo' selected';}}echo'>February</option>
+					<option value="March2015"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="March2015"){echo' selected';}}echo'>March</option>
 			</select>
 			
 			<label for="myNum">Show: </label>
 			<select name="myNum" class="form-control"><!--PHP TO REMEMBER ORIGINAL SELECTION-->
-					<option value="5"';if(isset($_SESSION['myNum'])){if($_SESSION['myNum']=="5"){echo' selected';}}echo'>5</option>
-					<option value="10"';if(isset($_SESSION['myNum'])){if($_SESSION['myNum']=="10"){echo' selected';}}echo'>10</option>
-					<option value="25"';if(isset($_SESSION['myNum'])){if($_SESSION['myNum']=="25"){echo' selected';}}echo'>25</option>
+					<option value="5"';if(isset($_SESSION['ipp'])){if($_SESSION['ipp']=="5"){echo' selected';}}echo'>5</option>
+					<option value="10"';if(isset($_SESSION['ipp'])){if($_SESSION['ipp']=="10"){echo' selected';}}echo'>10</option>
+					<option value="25"';if(isset($_SESSION['ipp'])){if($_SESSION['ipp']=="25"){echo' selected';}}echo'>25</option>
 			</select>
 			
 			<label for="submit" class="sublabel">Items Per Page &emsp;</label>
@@ -151,6 +167,8 @@ echo'
 	if(isset($_SESSION['myCat']) && isset($_SESSION['myMonth'])){
 		//if so, show results
 		while ($row = mysqli_fetch_array($result)) {
+			//filter the search results based on date chosen
+			if($row['date'] >= $_SESSION['date'] && $row['date'] <= $_SESSION['enddate']){	
 			echo'
 			<div class="panel panel-default">
 				<div class="panel-heading">
@@ -175,18 +193,21 @@ echo'
 				</div>
 			</div>
 			';
+			}
 		}
-	}
 echo'
 <!-- Pagination =================================================================-->
 		<ul class="pagination">';
-		for ($i=1; $i<=$total_pages; $i++) {
-			echo'<li><a href="';if($total_pages > 1){echo $i-1;}else{echo'"#"';}echo'" aria-label="Previous">&laquo;</a></li>';
-			echo'<li><a href="index.php?page="'.$i.'">'.$i.'</a></li>';
-			echo'<li><a href="';if($total_pages > 1 && $page != $i){echo $i+1;}else{echo'"#"';}echo'" aria-label="Next">&raquo;</a></li>';
-		}
+			echo'<li><a href="index.php?page=prev" aria-label="Previous">&laquo;</a></li>';
+			for ($i=1; $i<=$total_pages; $i++) {
+				echo'<li><a href="index.php?page='.$i.'">'.$i.'</a></li>';
+			}
+			echo'<li><a href="index.php?page=next" aria-label="Next">&raquo;</a></li>';
 		echo'
 		</ul>
+	';
+	}
+	echo'
 		
     </div><!-- /container -->
 
@@ -202,7 +223,6 @@ echo'
   </body>
 </html>
 
-
 ';
-
+mysqli_close($conn);
 ?>
