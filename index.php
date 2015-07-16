@@ -55,24 +55,28 @@ if(isset($_SESSION['ipp'])){
 
 if( isset($_SESSION['myCat']) && isset($_SESSION['myMonth'])){
 	$sql = "SELECT $news_table.ID, $news_table.title, $news_table.content, $news_table.date
-	FROM $news_table 
-	INNER JOIN $pivot_table 
+	FROM $news_table
+	INNER JOIN $pivot_table
+	ON $pivot_table.news_item_id = $news_table.ID
 	INNER JOIN $cat_table
 	ON $cat_table.ID = $pivot_table.category_id
-	AND $pivot_table.news_item_id = $news_table.ID
 	AND $cat_table.title = '$_SESSION[myCat]'
+	WHERE date >= '$_SESSION[date]'
+	AND date <= '$_SESSION[enddate]'
 	ORDER BY date ASC
 	LIMIT $start_from, ".$_SESSION['ipp']."";
 	$result = mysqli_query($conn, $sql) or die (mysqli_error($conn));
 	
 	//now count results to split into pages
 	$sqlC = "SELECT count($news_table.ID), $news_table.ID, $news_table.title, $news_table.content, $news_table.date
-	FROM $news_table 
-	INNER JOIN $pivot_table 
+	FROM $news_table
+	INNER JOIN $pivot_table
+	ON $pivot_table.news_item_id = $news_table.ID
 	INNER JOIN $cat_table
 	ON $cat_table.ID = $pivot_table.category_id
-	AND $pivot_table.news_item_id = $news_table.ID
-	AND $cat_table.title = '$_SESSION[myCat]'";
+	AND $cat_table.title = '$_SESSION[myCat]'
+	WHERE date >= '$_SESSION[date]'
+	AND date <= '$_SESSION[enddate]'";
 	$rs_result = mysqli_query($conn,$sqlC) or die (mysqli_error($conn));
 	$rowC = mysqli_fetch_row($rs_result);
 	$total_records = $rowC[0];
@@ -166,9 +170,7 @@ echo'
 	//check if a search string has been sent
 	if(isset($_SESSION['myCat']) && isset($_SESSION['myMonth'])){
 		//if so, show results
-		while ($row = mysqli_fetch_array($result)) {
-			//filter the search results based on date chosen
-			if($row['date'] >= $_SESSION['date'] && $row['date'] <= $_SESSION['enddate']){	
+		while ($row = mysqli_fetch_array($result)) {	
 			echo'
 			<div class="panel panel-default">
 				<div class="panel-heading">
@@ -193,10 +195,12 @@ echo'
 				</div>
 			</div>
 			';
-			}
 		}
 echo'
 <!-- Pagination =================================================================-->
+';
+	if(isset($total_records) && $total_records > 0){
+	echo'
 		<ul class="pagination">';
 			echo'<li><a href="index.php?page=prev" aria-label="Previous">&laquo;</a></li>';
 			for ($i=1; $i<=$total_pages; $i++) {
@@ -206,7 +210,10 @@ echo'
 		echo'
 		</ul>
 	';
+	}else{
+		echo '<p style="color:#f00">No Results Found.</p>';	
 	}
+}
 	echo'
 		
     </div><!-- /container -->
