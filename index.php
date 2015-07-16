@@ -28,9 +28,9 @@ $cat_table = "category";
 $pivot_table = "category_news_item";
 
 
-//check what page we're on else set to 1
+//check what page we're or else set to 1
 if (isset($_GET["page"])){
-	$myP = $_GET["page"];
+	$myP = mysqli_real_escape_string($conn, $_GET["page"]);
 	if($myP == "prev"){
 		if($_SESSION['page'] > 1){
 				$_SESSION['page']--;
@@ -52,7 +52,14 @@ if(isset($_SESSION['ipp'])){
 	$start_from = 0;
 }
 
+//change query if tag was clicked
+if(isset($_GET['tag'])){
+	$tag = mysqli_real_escape_string($conn, $_GET['tag']);
+	$_SESSION['myCat'] = $tag;
+}
+		
 
+//search query
 if( isset($_SESSION['myCat']) && isset($_SESSION['myMonth'])){
 	$sql = "SELECT $news_table.ID, $news_table.title, $news_table.content, $news_table.date
 	FROM $news_table
@@ -83,6 +90,7 @@ if( isset($_SESSION['myCat']) && isset($_SESSION['myMonth'])){
 	$total_pages = ceil($total_records / $_SESSION['ipp']);
 	$_SESSION['tPages'] = $total_pages;
 }
+
 echo'
 <!DOCTYPE html>
 <html lang="en">
@@ -90,7 +98,6 @@ echo'
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=no">
-    <!-- The above 3 meta tags stay at top -->
     <meta name=apple-mobile-web-app-capable content=yes>
     <meta name=apple-mobile-web-app-status-bar-style content=black>
     <meta name="description" content="Test example for Clever Cherry">
@@ -174,11 +181,11 @@ echo'
 			echo'
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<a href="#"><h3>'.$row['title'].'</h3></a>
+					<a href="news.php?id='.$row['ID'].'"><h3>'.$row['title'].'</h3></a>
 				</div>
 				<div class="panel-body">
 					<p class="date">'.date('jS M Y',strtotime($row['date'])).'</p>
-					<p>'.substr($row['content'],0,600).'...... <a href="#">Read More</a></p>
+					<p>'.substr($row['content'],0,200).'...... <a href="news.php?id='.$row['ID'].'">Read More</a></p>
 					';
 						//get the news tags for each result
 						$sql2 = "SELECT $cat_table.title
@@ -189,7 +196,7 @@ echo'
 						ORDER BY title ASC";
 						$result2 = mysqli_query($conn, $sql2) or die (mysqli_error($conn));
 					while ($row2 = mysqli_fetch_array($result2)) {
-						echo '<a class="label label-info">'.$row2['title'].'</a>';
+							echo '<a href="index.php?tag='.$row2['title'].'" class="label label-info">'.$row2['title'].'</a>';
 					}
 					echo'
 				</div>

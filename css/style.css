@@ -17,6 +17,10 @@ p.date {
 	margin: 0px 2px;	
 }
 
+.backbtn {
+	margin:50px 0px;	
+}
+
 @media(max-width:767px)
 {
 	input[type=submit] {
