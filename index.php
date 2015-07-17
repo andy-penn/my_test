@@ -91,6 +91,14 @@ if( isset($_SESSION['myCat']) && isset($_SESSION['myMonth'])){
 	$_SESSION['tPages'] = $total_pages;
 }
 
+//check for tag names
+$sql3 = "SELECT * FROM $cat_table ORDER BY title ASC";
+$result3 = mysqli_query($conn, $sql3) or die (mysqli_error($conn));
+
+//check for dates of news articles
+$sql4 = "SELECT distinct month(date) as months, year(date) as years FROM $news_table ORDER BY date ASC";
+$result4 = mysqli_query($conn, $sql4) or die (mysqli_error($conn));
+
 echo'
 <!DOCTYPE html>
 <html lang="en">
@@ -131,25 +139,42 @@ echo'
 			<label for="myCat">Category: </label>
 			<select name="myCat" class="form-control"><!--PHP TO REMEMBER ORIGINAL SELECTION-->
 				<option selected disabled>Please Select</option>
-				<option value="Lorem"';if(isset($_SESSION['myCat'])){if($_SESSION['myCat']=="Lorem"){echo' selected';}}echo'>Lorem</option>
-				<option value="Ipsum"';if(isset($_SESSION['myCat'])){if($_SESSION['myCat']=="Ipsum"){echo' selected';}}echo'>Ipsum</option>
-				<option value="Accumsan"';if(isset($_SESSION['myCat'])){if($_SESSION['myCat']=="Accumsan"){echo' selected';}}echo'>Accumsan</option>
-				<option value="Varius"';if(isset($_SESSION['myCat'])){if($_SESSION['myCat']=="Varius"){echo' selected';}}echo'>Varius</option>
-				<option value="Habitasse"';if(isset($_SESSION['myCat'])){if($_SESSION['myCat']=="Habitasse"){echo' selected';}}echo'>Habitasse</option>
-				<option value="Elementum"';if(isset($_SESSION['myCat'])){if($_SESSION['myCat']=="Elementum"){echo' selected';}}echo'>Elementum</option>
-				<option value="Sed"';if(isset($_SESSION['myCat'])){if($_SESSION['myCat']=="Sed"){echo' selected';}}echo'>Sed</option>
+				';
+				while ($row3 = mysqli_fetch_array($result3)) {	
+					echo '<option value="'.$row3['title'].'"';if(isset($_SESSION['myCat'])){if($_SESSION['myCat']==$row3['title']){echo' selected';}}echo'>'.$row3['title'].'</option>';
+				}
+				echo'
 			</select>
 			
 			<label for="myMonth">Month: </label>
 			<select name="myMonth" class="form-control"><!--PHP TO REMEMBER ORIGINAL SELECTION-->
 				<option selected disabled>Please Select</option>
+				';
+				//display only the dates that posts have been created
+				while ($row4 = mysqli_fetch_array($result4)) {
+					if(isset($oldYear)){
+						if($row4['years'] == $oldYear){
+							echo'<option value="'.date('F', mktime(0, 0, 0, $row4['months'], 10)).$row4['years'].'"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']==date('F', mktime(0, 0, 0, $row4['months'], 10)).$row4['years']){echo' selected';}}echo'>'.date('F', mktime(0, 0, 0, $row4['months'], 10)).'</option>';
+						}else{
+							echo '<optgroup Label="'.$row4['years'].'">';
+							echo'<option value="'.date('F', mktime(0, 0, 0, $row4['months'], 10)).$row4['years'].'"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']==date('F', mktime(0, 0, 0, $row4['months'], 10)).$row4['years']){echo' selected';}}echo'>'.date('F', mktime(0, 0, 0, $row4['months'], 10)).'</option>';
+						}
+					}else{
+						echo '<optgroup Label="'.$row4['years'].'">';
+						echo'<option value="'.date('F', mktime(0, 0, 0, $row4['months'], 10)).$row4['years'].'"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']==date('F', mktime(0, 0, 0, $row4['months'], 10)).$row4['years']){echo' selected';}}echo'>'.date('F', mktime(0, 0, 0, $row4['months'], 10)).'</option>';
+					}
+					$oldYear = $row4['years'];
+				}
+				echo'
+				<option value="January2014"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="January2014"){echo' selected';}}echo'>January</option>
+				<!--			
 				<optgroup Label="2014">
 					<option value="November2014"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="November2014"){echo' selected';}}echo'>November</option>
 					<option value="December2014"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="December2014"){echo' selected';}}echo'>December</option>
 				<optgroup Label="2015">
 					<option value="January2015"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="January2015"){echo' selected';}}echo'>January</option>
 					<option value="February2015"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="February2015"){echo' selected';}}echo'>February</option>
-					<option value="March2015"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="March2015"){echo' selected';}}echo'>March</option>
+					<option value="March2015"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="March2015"){echo' selected';}}echo'>March</option>-->
 			</select>
 			
 			<label for="myNum">Show: </label>
