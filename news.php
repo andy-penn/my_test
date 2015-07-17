@@ -10,6 +10,7 @@ $pivot_table = "category_news_item";
 
 //check what page we're or else set to 1
 if (isset($_GET["id"])){
+	$oldpage = mysqli_real_escape_string($conn, $_GET['p']);
 	$id =  mysqli_real_escape_string($conn, $_GET['id']);
 	$sql = "SELECT * FROM $news_table WHERE ID = '$id'";
 	$result = mysqli_query($conn, $sql) or die (mysqli_error($conn));
@@ -51,7 +52,7 @@ echo'
 
   <body>
     <div class="container">
-	<a href="index.php" class="btn btn-default backbtn">Back</a>
+	<a href="index.php?page='.$oldpage.'" class="btn btn-default backbtn">Back</a>
 <!-- Search Results ==============================================================-->
 ';
 	//check if a search string has been sent

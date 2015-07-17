@@ -197,11 +197,11 @@ echo'
 			echo'
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<a href="news.php?id='.$row['ID'].'"><h3>'.$row['title'].'</h3></a>
+					<a href="news.php?id='.$row['ID'].'&p='.$_SESSION['page'].'"><h3>'.$row['title'].'</h3></a>
 				</div>
 				<div class="panel-body">
 					<p class="date">'.date('jS M Y',strtotime($row['date'])).'</p>
-					<p>'.substr($row['content'],0,200).'...... <a href="news.php?id='.$row['ID'].'">Read More</a></p>
+					<p>'.substr($row['content'],0,200).'...... <a href="news.php?id='.$row['ID'].'&p='.$_SESSION['page'].'">Read More</a></p>
 					';
 						//get the news tags for each result
 						$sql2 = "SELECT $cat_table.title
