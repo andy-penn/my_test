@@ -166,15 +166,6 @@ echo'
 					$oldYear = $row4['years'];
 				}
 				echo'
-				<option value="January2014"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="January2014"){echo' selected';}}echo'>January</option>
-				<!--			
-				<optgroup Label="2014">
-					<option value="November2014"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="November2014"){echo' selected';}}echo'>November</option>
-					<option value="December2014"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="December2014"){echo' selected';}}echo'>December</option>
-				<optgroup Label="2015">
-					<option value="January2015"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="January2015"){echo' selected';}}echo'>January</option>
-					<option value="February2015"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="February2015"){echo' selected';}}echo'>February</option>
-					<option value="March2015"';if(isset($_SESSION['myMonth'])){if($_SESSION['myMonth']=="March2015"){echo' selected';}}echo'>March</option>-->
 			</select>
 			
 			<label for="myNum">Show: </label>
@@ -236,7 +227,7 @@ echo'
 		<ul class="pagination">';
 			echo'<li><a href="index.php?page=prev" aria-label="Previous">&laquo;</a></li>';
 			for ($i=1; $i<=$total_pages; $i++) {
-				echo'<li><a href="index.php?page='.$i.'">'.$i.'</a></li>';
+				echo'<li'; if(isset($_SESSION['page']) && $_SESSION['page'] == $i){echo ' class="active"';} echo'><a href="index.php?page='.$i.'">'.$i.'</a></li>';
 			}
 			echo'<li><a href="index.php?page=next" aria-label="Next">&raquo;</a></li>';
 		echo'
